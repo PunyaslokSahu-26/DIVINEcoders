@@ -3,7 +3,7 @@ import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'rec
 
 const Navbar = () => {
   return (
-    <div className="w-80 bg-gray-900 text-white">
+    <div className="bg-gray-900 text-white">
         <div className="p-6">
           <h2 className="text-xl font-bold mb-6">Employee Portal</h2>
           <nav>

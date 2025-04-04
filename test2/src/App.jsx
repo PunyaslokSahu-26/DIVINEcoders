@@ -12,9 +12,14 @@ function App() {
   return (
     <>
       <div className="flex">
-        <Navbar/>
-        <EmployeePerformanceDashboard/>
-      </div>
+  <div className="bg-gray-900 text-white h-screen w-64">
+    <Navbar />  
+  </div>
+  <div className="flex-1 p-6">
+    <EmployeePerformanceDashboard />
+  </div>
+</div>
+
       
     </>
   )
