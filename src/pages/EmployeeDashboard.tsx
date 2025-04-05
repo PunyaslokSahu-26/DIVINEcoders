@@ -23,6 +23,7 @@ import EmployeeProfile from "@/components/employee/EmployeeProfile";
 import EmployeeFeedback from "@/components/employee/EmployeeFeedback";
 import EmployeeEvents from "@/components/employee/EmployeeEvents";
 import LeaveApplication from "@/components/employee/LeaveApplication";
+import ChatBot from '@/components/Chatbot/Chatbot';
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
@@ -155,6 +156,7 @@ const EmployeeDashboard = () => {
           </div>
         </div>
       </div>
+      <ChatBot />
     </SidebarProvider>
   );
 };
