@@ -23,7 +23,7 @@ const salaryData = [
     bonus: 5000,
     benefits: 12000,
     totalCompensation: 102000,
-    lastIncrement: "2023-06-15",
+    lastIncrement: "2024-06-15",
     incrementPercent: 5,
     image: "https://i.pravatar.cc/150?img=1"
   },
@@ -36,7 +36,7 @@ const salaryData = [
     bonus: 3500,
     benefits: 10000,
     totalCompensation: 88500,
-    lastIncrement: "2023-04-10",
+    lastIncrement: "2024-04-10",
     incrementPercent: 4,
     image: "https://i.pravatar.cc/150?img=5"
   },

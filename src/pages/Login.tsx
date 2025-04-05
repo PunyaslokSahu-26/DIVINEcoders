@@ -25,8 +25,7 @@ const Login = () => {
       return;
     }
 
-    // In a real app, you would validate credentials with your backend
-    // For demo purposes, we'll navigate based on the selected role
+  
     toast({
       title: "Success",
       description: "Login successful!",
@@ -50,7 +49,6 @@ const Login = () => {
       return;
     }
 
-    // In a real app, you would register the user with your backend
     toast({
       title: "Success",
       description: "Account created successfully!",
@@ -75,7 +73,7 @@ const Login = () => {
           <CardHeader>
             <CardTitle>Welcome to Atom HR</CardTitle>
             <CardDescription>
-              Login or create an account to continue
+              Login or create account to continue
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -149,7 +147,7 @@ const Login = () => {
                     <Label htmlFor="name">Full Name</Label>
                     <Input 
                       id="name" 
-                      placeholder="John Doe" 
+                      placeholder="Zaira Huma" 
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
@@ -214,7 +212,7 @@ const Login = () => {
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-gray-500">
-              © 2023 GoFloww's Atom HR Platform
+              © 2025 GoFloww's Atom HR Platform
             </p>
           </CardFooter>
         </Card>

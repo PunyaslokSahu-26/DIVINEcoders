@@ -22,7 +22,7 @@ const initialTasks = [
     id: 1, 
     title: "Complete Frontend Project", 
     description: "Finish the UI components for the new dashboard", 
-    dueDate: "2023-12-15", 
+    dueDate: "2024-12-15", 
     progress: 75, 
     priority: "High", 
     category: "Work"
@@ -31,7 +31,7 @@ const initialTasks = [
     id: 2, 
     title: "Prepare for Performance Review", 
     description: "Gather achievements and metrics for quarterly review", 
-    dueDate: "2023-12-10", 
+    dueDate: "2025-01-19", 
     progress: 30, 
     priority: "Medium", 
     category: "Personal"
@@ -40,7 +40,7 @@ const initialTasks = [
     id: 3, 
     title: "Team Meeting Preparation", 
     description: "Prepare agenda and slides for weekly team meeting", 
-    dueDate: "2023-12-05", 
+    dueDate: "2025-03-27", 
     progress: 50, 
     priority: "Low", 
     category: "Work"
@@ -52,17 +52,17 @@ const initialEvents = [
   { 
     id: 101, 
     title: "Team Building Event", 
-    date: "2023-12-20", 
+    date: "2025-01-20", 
     startTime: "10:00", 
     endTime: "17:00", 
-    location: "Central Park", 
+    location: "The Central Park", 
     description: "Annual team building activity with outdoor games and lunch", 
     category: "Social"
   },
   { 
     id: 102, 
     title: "Project Kickoff", 
-    date: "2023-12-12", 
+    date: "2024-12-12", 
     startTime: "09:30", 
     endTime: "11:30", 
     location: "Conference Room A", 
@@ -72,7 +72,7 @@ const initialEvents = [
   { 
     id: 103, 
     title: "Training Session", 
-    date: "2023-12-18", 
+    date: "2025-03-18", 
     startTime: "13:00", 
     endTime: "15:00", 
     location: "Training Room", 

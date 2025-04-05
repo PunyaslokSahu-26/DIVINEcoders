@@ -19,45 +19,45 @@ const initialRequests = [
   { 
     id: 1, 
     type: "Annual Leave", 
-    startDate: "2023-12-20", 
-    endDate: "2023-12-27", 
+    startDate: "2025-02-20", 
+    endDate: "2025-02-27", 
     days: 5,
     reason: "Family vacation",
-    appliedOn: "2023-11-25",
+    appliedOn: "2025-02-15",
     status: "Approved",
-    approvedOn: "2023-11-27"
+    approvedOn: "2025-02-17"
   },
   { 
     id: 2, 
     type: "Sick Leave", 
-    startDate: "2023-11-10", 
-    endDate: "2023-11-12", 
+    startDate: "2025-01-10", 
+    endDate: "2025-01-12", 
     days: 3,
     reason: "Caught a flu",
-    appliedOn: "2023-11-09",
+    appliedOn: "2025-01-09",
     status: "Approved",
-    approvedOn: "2023-11-09"
+    approvedOn: "2025-01-09"
   },
   { 
     id: 3, 
     type: "Work From Home", 
-    startDate: "2023-12-05", 
-    endDate: "2023-12-09", 
+    startDate: "2025-02-05", 
+    endDate: "2025-02-09", 
     days: 5,
     reason: "Home maintenance",
-    appliedOn: "2023-11-20",
+    appliedOn: "2025-01-31",
     status: "Pending"
   },
   { 
     id: 4, 
     type: "Personal Leave", 
-    startDate: "2023-10-05", 
-    endDate: "2023-10-05", 
+    startDate: "2024-12-05", 
+    endDate: "2024-12-05", 
     days: 1,
     reason: "Doctor's appointment",
-    appliedOn: "2023-10-01",
+    appliedOn: "2024-12-01",
     status: "Rejected",
-    rejectedOn: "2023-10-03",
+    rejectedOn: "2024-12-03",
     rejectionReason: "Critical project deadline"
   },
 ];
@@ -207,7 +207,7 @@ const LeaveApplication = () => {
       <div className="flex justify-between items-center">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold">Leave Management</h2>
-          <p className="text-muted-foreground">Apply for and track your leave requests</p>
+          <p className="text-muted-foreground">Apply and track your leaves</p>
         </div>
         <Button onClick={() => setDialogOpen(true)}>
           Apply for Leave
@@ -478,7 +478,7 @@ const LeaveApplication = () => {
           <DialogHeader>
             <DialogTitle>Apply for Leave</DialogTitle>
             <DialogDescription>
-              Fill out the form to submit your leave request.
+              Fill out the form to submit leave request.
             </DialogDescription>
           </DialogHeader>
           
