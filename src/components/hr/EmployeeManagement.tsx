@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,11 +12,11 @@ import { motion } from "framer-motion";
 
 // Mock data
 const initialEmployees = [
-  { id: 1, name: "Rahul Sharma", position: "Frontend Developer", department: "Engineering", email: "rahul@example.com", joiningDate: "2020-05-15", status: "Active", image: "https://i.pravatar.cc/150?img=1" },
-  { id: 2, name: "Emily Johnson", position: "Marketing Specialist", department: "Marketing", email: "emily@example.com", joiningDate: "2019-11-23", status: "Active", image: "https://i.pravatar.cc/150?img=5" },
-  { id: 3, name: "Sneha Patel", position: "Product Manager", department: "Product", email: "sneha24@example.com", joiningDate: "2021-02-10", status: "Active", image: "https://i.pravatar.cc/150?img=9" },
-  { id: 4, name: "Priya Singh", position: "UX Designer", department: "Design", email: "priya10@example.com", joiningDate: "2020-09-30", status: "On Leave", image: "https://i.pravatar.cc/150?img=10" },
-  { id: 5, name: "Naveen Joshi", position: "Backend Developer", department: "Engineering", email: "naveen7@example.com", joiningDate: "2022-03-05", status: "Active", image: "https://i.pravatar.cc/150?img=12" }
+  { id: 1, name: "Rahul Sharma", position: "Backend Developer", department: "Engineering", email: "EMP001@company.com", joiningDate: "2020-05-15", status: "Active", image: "https://i.pravatar.cc/150?img=12" },
+  { id: 2, name: "Emily Johnson", position: "Marketing Specialist", department: "Marketing", email: "EMP002@company.com", joiningDate: "2019-11-23", status: "Active", image: "https://i.pravatar.cc/150?img=5" },
+  { id: 3, name: "Sneha Patel", position: "Product Manager", department: "Product", email: "EMP003@company.com", joiningDate: "2021-02-10", status: "Active", image: "https://i.pravatar.cc/150?img=9" },
+  { id: 4, name: "Priya Singh", position: "UX Designer", department: "Design", email: "EMP004@company.com", joiningDate: "2020-09-30", status: "On Leave", image: "https://i.pravatar.cc/150?img=10" },
+  { id: 5, name: "Naveen Joshi", position: "Frontend Developer", department: "Engineering", email: "EMP005@company.com", joiningDate: "2022-03-05", status: "Active", image: "https://i.pravatar.cc/150?img=15" }
 ];
 
 const EmployeeManagement = () => {
