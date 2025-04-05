@@ -161,7 +161,7 @@ export let feedbacks: Feedback[] = [
 ];
 
 // Function to add new feedback
-export const addFeedback = (newFeedback: Omit<Feedback, 'id'>) => {
+export const addFeedback = (newFeedback: Omit<Feedback, 'id'>): Feedback => {
   const newId = feedbacks.length > 0 ? Math.max(...feedbacks.map(f => f.id)) + 1 : 1;
   const feedbackWithId = { ...newFeedback, id: newId };
   feedbacks = [...feedbacks, feedbackWithId];
