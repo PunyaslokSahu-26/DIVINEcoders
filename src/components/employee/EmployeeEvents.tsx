@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -272,14 +271,14 @@ const EmployeeEvents = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6"
+      className="space-y-6 w-full"
     >
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold">My Tasks & Events</h2>
           <p className="text-muted-foreground">Manage your tasks, goals, and upcoming events</p>
         </div>
-        <div className="space-x-2">
+        <div>
           {activeTab === "tasks" ? (
             <Button onClick={() => setTaskDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
@@ -305,7 +304,7 @@ const EmployeeEvents = () => {
             tasks.map((task) => (
               <Card key={task.id} className="shadow-card hover:shadow-lg transition-shadow duration-300">
                 <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
                     <div>
                       <CardTitle className="flex items-center">
                         {task.title}
@@ -315,7 +314,7 @@ const EmployeeEvents = () => {
                       </CardTitle>
                       <CardDescription>{task.description}</CardDescription>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Badge className={getPriorityColor(task.priority)}>
                         {task.priority}
                       </Badge>
@@ -396,7 +395,7 @@ const EmployeeEvents = () => {
             <CardContent className="grid gap-4">
               {events.length > 0 ? (
                 events.map((event) => (
-                  <div key={event.id} className="flex justify-between items-start border-b pb-4 last:border-0 last:pb-0">
+                  <div key={event.id} className="flex flex-col sm:flex-row justify-between items-start border-b pb-4 last:border-0 last:pb-0 gap-3">
                     <div>
                       <h4 className="font-medium">{event.title}</h4>
                       <div className="flex items-center text-sm text-muted-foreground mt-1">
@@ -418,6 +417,7 @@ const EmployeeEvents = () => {
                       variant="ghost" 
                       size="sm"
                       onClick={() => handleDeleteEvent(event.id)}
+                      className="mt-2 sm:mt-0"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -435,7 +435,7 @@ const EmployeeEvents = () => {
 
       {/* Add Task Dialog */}
       <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="max-w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add New Task</DialogTitle>
             <DialogDescription>
@@ -467,7 +467,7 @@ const EmployeeEvents = () => {
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="dueDate">Due Date</Label>
                 <Popover>
@@ -504,7 +504,7 @@ const EmployeeEvents = () => {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
                 <Select 
@@ -549,7 +549,7 @@ const EmployeeEvents = () => {
 
       {/* Add Event Dialog */}
       <Dialog open={eventDialogOpen} onOpenChange={setEventDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="max-w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add New Event</DialogTitle>
             <DialogDescription>
@@ -587,7 +587,7 @@ const EmployeeEvents = () => {
               </Popover>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="startTime">Start Time</Label>
                 <Input

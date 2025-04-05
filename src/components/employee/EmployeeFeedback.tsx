@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,45 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MessageSquare, Send, Star } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
-
-// Mock data for colleagues
-const colleagues = [
-  { id: 1, name: "David Rodriguez", position: "Backend Developer", department: "Engineering", image: "https://i.pravatar.cc/150?img=12" },
-  { id: 2, name: "Emily Johnson", position: "Marketing Specialist", department: "Marketing", image: "https://i.pravatar.cc/150?img=5" },
-  { id: 3, name: "Michael Chen", position: "Product Manager", department: "Product", image: "https://i.pravatar.cc/150?img=9" },
-  { id: 4, name: "Sarah Williams", position: "UX Designer", department: "Design", image: "https://i.pravatar.cc/150?img=10" },
-  { id: 5, name: "James Wilson", position: "HR Manager", department: "Human Resources", image: "https://i.pravatar.cc/150?img=15" },
-];
-
-// Mock data for previously submitted feedback
-const previousFeedback = [
-  { 
-    id: 101, 
-    to: "David Rodriguez", 
-    position: "Backend Developer",
-    type: "Peer",
-    date: "2023-11-15", 
-    rating: 4,
-    strengths: ["Technical knowledge", "Problem-solving", "Team player"],
-    improvements: ["Documentation", "Knowledge sharing"],
-    comments: "David has been an excellent collaborator on our recent project. His technical skills were crucial to our success.",
-    image: "https://i.pravatar.cc/150?img=12"
-  },
-  { 
-    id: 102, 
-    to: "James Wilson", 
-    position: "HR Manager",
-    type: "Manager",
-    date: "2023-10-20", 
-    rating: 5,
-    strengths: ["Leadership", "Communication", "Empathy"],
-    improvements: ["Process efficiency"],
-    comments: "James has been a supportive manager who provides clear guidance and addresses team concerns promptly.",
-    image: "https://i.pravatar.cc/150?img=15"
-  },
-];
+import { useAuth } from "@/hooks/useAuth";
+import { users, feedbacks, addFeedback, Feedback } from "@/data/mockDatabase";
 
 const EmployeeFeedback = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("give-feedback");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedColleague, setSelectedColleague] = useState<any>(null);
@@ -59,10 +24,20 @@ const EmployeeFeedback = () => {
     strengths: "",
     improvements: "",
     comments: "",
-    rating: 0
+    rating: 0,
+    isAnonymous: false,
+    type: "Peer"
   });
   const [viewFeedbackDialog, setViewFeedbackDialog] = useState(false);
   const [viewingFeedback, setViewingFeedback] = useState<any>(null);
+
+  // Filter out current user from colleagues list
+  const colleagues = users.filter(u => u.role === 'employee' && u.id !== user?.id);
+
+  // Get feedbacks for current user - both given and received
+  const myGivenFeedbacks = feedbacks.filter(f => f.from === user?.id);
+  // Include all feedback addressed to the current user, whether anonymous or not
+  const myReceivedFeedbacks = feedbacks.filter(f => f.to === user?.id);
 
   const handleGiveFeedback = (colleague: any) => {
     setSelectedColleague(colleague);
@@ -70,7 +45,9 @@ const EmployeeFeedback = () => {
       strengths: "",
       improvements: "",
       comments: "",
-      rating: 0
+      rating: 0,
+      isAnonymous: false,
+      type: "Peer" // Default to peer feedback
     });
     setDialogOpen(true);
   };
@@ -90,6 +67,31 @@ const EmployeeFeedback = () => {
       return;
     }
 
+    // Convert comma-separated strengths and improvements to arrays
+    const strengths = feedbackForm.strengths
+      ? feedbackForm.strengths.split(',').map(s => s.trim()).filter(Boolean)
+      : [];
+    
+    const improvements = feedbackForm.improvements
+      ? feedbackForm.improvements.split(',').map(s => s.trim()).filter(Boolean)
+      : [];
+
+    // Prepare the new feedback data
+    const newFeedback: Omit<Feedback, 'id'> = {
+      from: user?.id || '',
+      to: selectedColleague.id,
+      type: feedbackForm.type as 'Peer' | 'Manager' | 'Upward',
+      date: new Date().toISOString().split('T')[0],
+      rating: feedbackForm.rating,
+      strengths,
+      improvements,
+      comments: feedbackForm.comments,
+      isAnonymous: feedbackForm.isAnonymous
+    };
+
+    // Add the new feedback to our database
+    addFeedback(newFeedback);
+    
     toast({
       title: "Feedback Submitted",
       description: `Your feedback for ${selectedColleague.name} has been successfully submitted.`,
@@ -99,8 +101,27 @@ const EmployeeFeedback = () => {
   };
 
   const handleViewFeedback = (feedback: any) => {
-    setViewingFeedback(feedback);
+    // Find the complete feedback details if we're viewing received feedback
+    const feedbackDetails = activeTab === "received-feedback" 
+      ? feedbacks.find(f => f.id === feedback.id)
+      : feedback;
+      
+    // For received anonymous feedback, hide the sender information
+    if (feedbackDetails && feedbackDetails.isAnonymous && activeTab === "received-feedback" && feedbackDetails.from !== 'HR001') {
+      setViewingFeedback({
+        ...feedbackDetails,
+        from: "Anonymous",
+        fromImage: ""
+      });
+    } else {
+      setViewingFeedback(feedbackDetails);
+    }
+    
     setViewFeedbackDialog(true);
+  };
+
+  const handleFeedbackTypeChange = (value: string) => {
+    setFeedbackForm(prev => ({ ...prev, type: value }));
   };
 
   return (
@@ -108,7 +129,7 @@ const EmployeeFeedback = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6"
+      className="space-y-6 w-full"
     >
       <div className="space-y-1">
         <h2 className="text-2xl font-bold">Employee Feedback</h2>
@@ -116,9 +137,10 @@ const EmployeeFeedback = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="give-feedback">Give Your Feedback</TabsTrigger>
-          <TabsTrigger value="my-feedback">My Previous Feedback</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 mb-6">
+          <TabsTrigger value="give-feedback">Give Feedback</TabsTrigger>
+          <TabsTrigger value="my-feedback">Given Feedback</TabsTrigger>
+          <TabsTrigger value="received-feedback">Received Feedback</TabsTrigger>
         </TabsList>
 
         <TabsContent value="give-feedback" className="space-y-4">
@@ -129,7 +151,7 @@ const EmployeeFeedback = () => {
             </CardHeader>
             <CardContent className="grid gap-6">
               {colleagues.map((colleague) => (
-                <div key={colleague.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
+                <div key={colleague.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-4 last:border-0 last:pb-0 gap-4">
                   <div className="flex items-center space-x-4">
                     <Avatar>
                       <AvatarImage src={colleague.image} alt={colleague.name} />
@@ -142,67 +164,91 @@ const EmployeeFeedback = () => {
                   </div>
                   <Button variant="outline" size="sm" onClick={() => handleGiveFeedback(colleague)}>
                     <MessageSquare className="mr-2 h-4 w-4" />
-                    Give Your Feedback
+                    Give Feedback
                   </Button>
                 </div>
               ))}
+              {user?.role === 'employee' && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-4 last:border-0 last:pb-0 gap-4">
+                  <div className="flex items-center space-x-4">
+                    <Avatar>
+                      <AvatarImage src={users.find(u => u.id === 'HR001')?.image} alt="HR Manager" />
+                      <AvatarFallback>HR</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium">{users.find(u => u.id === 'HR001')?.name}</p>
+                      <p className="text-sm text-muted-foreground">HR Manager • Human Resources</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => handleGiveFeedback(users.find(u => u.id === 'HR001'))}>
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Give Feedback
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="my-feedback" className="space-y-4">
-          {previousFeedback.length > 0 ? (
-            previousFeedback.map((feedback) => (
-              <Card key={feedback.id} className="shadow-card hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center space-x-4">
-                      <Avatar>
-                        <AvatarImage src={feedback.image} alt={feedback.to} />
-                        <AvatarFallback>{feedback.to.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <CardTitle>{feedback.to}</CardTitle>
-                        <CardDescription>{feedback.position}</CardDescription>
+          {myGivenFeedbacks.length > 0 ? (
+            myGivenFeedbacks.map((feedback) => {
+              const feedbackTo = users.find(u => u.id === feedback.to);
+              return (
+                <Card key={feedback.id} className="shadow-card hover:shadow-lg transition-shadow duration-300">
+                  <CardHeader>
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar>
+                          <AvatarImage src={feedbackTo?.image} alt={feedbackTo?.name} />
+                          <AvatarFallback>{feedbackTo?.name?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle>{feedbackTo?.name}</CardTitle>
+                          <CardDescription>{feedbackTo?.position}</CardDescription>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 items-end sm:items-start">
+                        <Badge variant="outline">{feedback.type} Feedback</Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(feedback.date).toLocaleDateString()}
+                        </span>
+                        {feedback.isAnonymous && (
+                          <Badge variant="secondary">Anonymous</Badge>
+                        )}
                       </div>
                     </div>
-                    <div className="flex flex-col items-end">
-                      <Badge variant="outline">{feedback.type} Feedback</Badge>
-                      <span className="text-sm text-muted-foreground mt-1">
-                        {new Date(feedback.date).toLocaleDateString()}
-                      </span>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center mb-4">
+                      <span className="mr-2 font-medium">Rating:</span>
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className={`h-5 w-5 ${star <= feedback.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center mb-4">
-                    <span className="mr-2 font-medium">Rating:</span>
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className={`h-5 w-5 ${star <= feedback.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-sm line-clamp-2">{feedback.comments}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="ghost" 
-                    className="ml-auto"
-                    onClick={() => handleViewFeedback(feedback)}
-                  >
-                    View Details
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))
+                    <p className="text-sm line-clamp-2">{feedback.comments}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="ghost" 
+                      className="ml-auto"
+                      onClick={() => handleViewFeedback(feedback)}
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })
           ) : (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-8">
                 <div className="rounded-full bg-muted p-3 mb-4">
                   <MessageSquare className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-medium mb-1">No Feedback Yet</h3>
+                <h3 className="text-lg font-medium mb-1">No Feedback Given Yet</h3>
                 <p className="text-sm text-muted-foreground text-center mb-4">
                   You haven't provided any feedback yet.
                 </p>
@@ -213,10 +259,83 @@ const EmployeeFeedback = () => {
             </Card>
           )}
         </TabsContent>
+
+        <TabsContent value="received-feedback" className="space-y-4">
+          {myReceivedFeedbacks.length > 0 ? (
+            myReceivedFeedbacks.map((feedback) => {
+              const feedbackFrom = feedback.isAnonymous && feedback.from !== 'HR001'
+                ? { name: "Anonymous", position: "", image: "" }
+                : users.find(u => u.id === feedback.from);
+              
+              return (
+                <Card key={feedback.id} className="shadow-card hover:shadow-lg transition-shadow duration-300">
+                  <CardHeader>
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                      <div className="flex items-center space-x-4">
+                        {!feedback.isAnonymous || feedback.from === 'HR001' ? (
+                          <Avatar>
+                            <AvatarImage src={feedbackFrom?.image} alt={feedbackFrom?.name} />
+                            <AvatarFallback>{feedbackFrom?.name?.charAt(0) || "A"}</AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <Avatar>
+                            <AvatarFallback>A</AvatarFallback>
+                          </Avatar>
+                        )}
+                        <div>
+                          <CardTitle>{feedbackFrom?.name}</CardTitle>
+                          {!feedback.isAnonymous && <CardDescription>{feedbackFrom?.position}</CardDescription>}
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 items-end sm:items-start">
+                        <Badge variant="outline">{feedback.type} Feedback</Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(feedback.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center mb-4">
+                      <span className="mr-2 font-medium">Rating:</span>
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className={`h-5 w-5 ${star <= feedback.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-sm line-clamp-2">{feedback.comments}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="ghost" 
+                      className="ml-auto"
+                      onClick={() => handleViewFeedback(feedback)}
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })
+          ) : (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-8">
+                <div className="rounded-full bg-muted p-3 mb-4">
+                  <MessageSquare className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-medium mb-1">No Feedback Received Yet</h3>
+                <p className="text-sm text-muted-foreground text-center mb-4">
+                  You haven't received any feedback yet.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
       </Tabs>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Provide Feedback</DialogTitle>
             <DialogDescription>
@@ -240,16 +359,36 @@ const EmployeeFeedback = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="feedbackType">Feedback Type</Label>
-                  <Select defaultValue="peer">
+                  <Select 
+                    defaultValue="Peer"
+                    onValueChange={handleFeedbackTypeChange}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="peer">Peer Feedback</SelectItem>
-                      <SelectItem value="manager">Manager Feedback</SelectItem>
-                      <SelectItem value="upward">Upward Feedback</SelectItem>
+                      <SelectItem value="Peer">Peer Feedback</SelectItem>
+                      {selectedColleague.role === 'hr' && (
+                        <SelectItem value="Upward">Upward Feedback</SelectItem>
+                      )}
+                      {user?.role === 'hr' && (
+                        <SelectItem value="Manager">Manager Feedback</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isAnonymous"
+                    checked={feedbackForm.isAnonymous}
+                    onChange={(e) => setFeedbackForm(prev => ({ ...prev, isAnonymous: e.target.checked }))}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <Label htmlFor="isAnonymous" className="text-sm">
+                    Submit anonymously
+                  </Label>
                 </div>
                 
                 <div className="space-y-2">
@@ -266,22 +405,22 @@ const EmployeeFeedback = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="strengths">Strengths</Label>
+                  <Label htmlFor="strengths">Strengths (comma-separated)</Label>
                   <Input
                     id="strengths"
                     name="strengths"
-                    placeholder="What are their key strengths?"
+                    placeholder="Technical skills, Communication, Problem-solving"
                     value={feedbackForm.strengths}
                     onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="improvements">Areas for Improvement</Label>
+                  <Label htmlFor="improvements">Areas for Improvement (comma-separated)</Label>
                   <Input
                     id="improvements"
                     name="improvements"
-                    placeholder="What could they improve on?"
+                    placeholder="Time management, Documentation"
                     value={feedbackForm.improvements}
                     onChange={handleInputChange}
                   />
@@ -313,32 +452,65 @@ const EmployeeFeedback = () => {
       </Dialog>
 
       <Dialog open={viewFeedbackDialog} onOpenChange={setViewFeedbackDialog}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Feedback Details</DialogTitle>
             <DialogDescription>
-              Review your submitted feedback.
+              {activeTab === "received-feedback" ? "View feedback you've received" : "Review your submitted feedback"}
             </DialogDescription>
           </DialogHeader>
           
           {viewingFeedback && (
             <div className="py-4">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src={viewingFeedback.image} alt={viewingFeedback.to} />
-                    <AvatarFallback>{viewingFeedback.to.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-medium">{viewingFeedback.to}</h3>
-                    <p className="text-sm text-muted-foreground">{viewingFeedback.position}</p>
-                  </div>
-                </div>
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                {activeTab === "my-feedback" ? (
+                  <>
+                    <div className="flex items-center space-x-4">
+                      <Avatar>
+                        <AvatarImage src={users.find(u => u.id === viewingFeedback.to)?.image} alt={users.find(u => u.id === viewingFeedback.to)?.name} />
+                        <AvatarFallback>{users.find(u => u.id === viewingFeedback.to)?.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-medium">To: {users.find(u => u.id === viewingFeedback.to)?.name}</h3>
+                        <p className="text-sm text-muted-foreground">{users.find(u => u.id === viewingFeedback.to)?.position}</p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center space-x-4">
+                      {viewingFeedback.from !== "Anonymous" ? (
+                        <>
+                          <Avatar>
+                            <AvatarImage src={users.find(u => u.id === viewingFeedback.from)?.image} alt={users.find(u => u.id === viewingFeedback.from)?.name} />
+                            <AvatarFallback>{users.find(u => u.id === viewingFeedback.from)?.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-medium">From: {users.find(u => u.id === viewingFeedback.from)?.name}</h3>
+                            <p className="text-sm text-muted-foreground">{users.find(u => u.id === viewingFeedback.from)?.position}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <Avatar>
+                            <AvatarFallback>A</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h3 className="font-medium">From: Anonymous</h3>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
                 <div className="text-right">
                   <Badge variant="outline">{viewingFeedback.type} Feedback</Badge>
                   <p className="text-sm text-muted-foreground mt-1">
                     {new Date(viewingFeedback.date).toLocaleDateString()}
                   </p>
+                  {viewingFeedback.isAnonymous && activeTab === "my-feedback" && (
+                    <Badge variant="secondary" className="mt-1">Anonymous</Badge>
+                  )}
                 </div>
               </div>
 
@@ -357,20 +529,28 @@ const EmployeeFeedback = () => {
 
                 <div className="space-y-2">
                   <Label>Strengths</Label>
-                  <ul className="list-disc pl-5 text-sm space-y-1">
-                    {viewingFeedback.strengths.map((strength: string, index: number) => (
-                      <li key={index}>{strength}</li>
-                    ))}
-                  </ul>
+                  {viewingFeedback.strengths && viewingFeedback.strengths.length > 0 ? (
+                    <ul className="list-disc pl-5 text-sm space-y-1">
+                      {viewingFeedback.strengths.map((strength: string, index: number) => (
+                        <li key={index}>{strength}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No specific strengths mentioned.</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label>Areas for Improvement</Label>
-                  <ul className="list-disc pl-5 text-sm space-y-1">
-                    {viewingFeedback.improvements.map((improvement: string, index: number) => (
-                      <li key={index}>{improvement}</li>
-                    ))}
-                  </ul>
+                  {viewingFeedback.improvements && viewingFeedback.improvements.length > 0 ? (
+                    <ul className="list-disc pl-5 text-sm space-y-1">
+                      {viewingFeedback.improvements.map((improvement: string, index: number) => (
+                        <li key={index}>{improvement}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No specific improvements mentioned.</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">

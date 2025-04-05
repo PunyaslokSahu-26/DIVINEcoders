@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,22 +18,22 @@ const feedbackData = [
     from: "Emily Johnson", 
     to: "Rahul Sharma", 
     date: "2023-11-25", 
-    summary: "Great collaboration on the frontend project", 
+    summary: "Great collaboration on the backend project", 
     strengths: ["Technical skills", "Communication", "Problem-solving"],
     improvements: ["Could delegate more tasks", "Time management"],
     fromImage: "https://i.pravatar.cc/150?img=5",
-    toImage: "https://i.pravatar.cc/150?img=1"
+    toImage: "https://i.pravatar.cc/150?img=12"
   },
   { 
     id: 2, 
     type: "manager", 
-    from: "Naveen Joshi", 
+    from: "Vikram Rathod", 
     to: "Priya Singh", 
     date: "2023-11-20", 
     summary: "Excellent design work on the new product", 
     strengths: ["Creativity", "Attention to detail", "User empathy"],
     improvements: ["Meeting deadlines", "Presenting work to stakeholders"],
-    fromImage: "https://i.pravatar.cc/150?img=12",
+    fromImage: "https://i.pravatar.cc/150?img=67",
     toImage: "https://i.pravatar.cc/150?img=10"
   },
   { 

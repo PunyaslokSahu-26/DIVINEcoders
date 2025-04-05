@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,180 +8,89 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { toast } from "@/components/ui/use-toast";
 import { Calendar, CheckCircle, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
-
-// Mock data
-const pendingLeaves = [
-  { 
-    id: 1, 
-    employee: "Rahul Sharma", 
-    position: "Frontend Developer",
-    department: "Engineering",
-    type: "Annual Leave", 
-    startDate: "2023-12-10", 
-    endDate: "2023-12-15", 
-    days: 5,
-    reason: "Family vacation",
-    appliedOn: "2023-11-28",
-    status: "Pending",
-    image: "https://i.pravatar.cc/150?img=1"
-  },
-  { 
-    id: 2, 
-    employee: "Emily Johnson", 
-    position: "Marketing Specialist",
-    department: "Marketing",
-    type: "Sick Leave", 
-    startDate: "2023-12-05", 
-    endDate: "2023-12-07", 
-    days: 3,
-    reason: "Medical appointment",
-    appliedOn: "2023-11-30",
-    status: "Pending",
-    image: "https://i.pravatar.cc/150?img=5"
-  },
-  { 
-    id: 3, 
-    employee: "Priya Singh", 
-    position: "UX Designer",
-    department: "Design",
-    type: "Work From Home", 
-    startDate: "2023-12-12", 
-    endDate: "2023-12-14", 
-    days: 3,
-    reason: "Home repairs",
-    appliedOn: "2023-12-01",
-    status: "Pending",
-    image: "https://i.pravatar.cc/150?img=10"
-  },
-];
-
-const approvedLeaves = [
-  { 
-    id: 101, 
-    employee: "Sneha Patel", 
-    position: "Product Manager",
-    department: "Product",
-    type: "Annual Leave", 
-    startDate: "2023-11-20", 
-    endDate: "2023-11-24", 
-    days: 5,
-    reason: "Personal time off",
-    appliedOn: "2023-11-10",
-    approvedOn: "2023-11-12",
-    status: "Approved",
-    image: "https://i.pravatar.cc/150?img=9"
-  },
-  { 
-    id: 102, 
-    employee: "Naveen Joshi", 
-    position: "Backend Developer",
-    department: "Engineering",
-    type: "Sick Leave", 
-    startDate: "2023-11-15", 
-    endDate: "2023-11-16", 
-    days: 2,
-    reason: "Not feeling well",
-    appliedOn: "2023-11-14",
-    approvedOn: "2023-11-14",
-    status: "Approved",
-    image: "https://i.pravatar.cc/150?img=12"
-  },
-];
-
-const rejectedLeaves = [
-  { 
-    id: 201, 
-    employee: "Santoshi Gupta", 
-    position: "Content Writer",
-    department: "Marketing",
-    type: "Annual Leave", 
-    startDate: "2023-12-20", 
-    endDate: "2023-12-31", 
-    days: 10,
-    reason: "Year-end vacation",
-    appliedOn: "2023-11-25",
-    rejectedOn: "2023-11-27",
-    rejectionReason: "Critical project deadline during this period",
-    status: "Rejected",
-    image: "https://i.pravatar.cc/150?img=20"
-  },
-];
+import { format } from "date-fns";
+import { leaveApplications, updateLeaveStatus, users } from "@/data/mockDatabase";
+import { useAuth } from "@/hooks/useAuth";
 
 const LeaveApproval = () => {
-  const [leaves, setLeaves] = useState({
-    pending: pendingLeaves,
-    approved: approvedLeaves,
-    rejected: rejectedLeaves
-  });
-  
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("pending");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState<any>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  
+  // Get user profiles for employee details
+  const getUserProfile = (userId: string) => {
+    return users.find(u => u.id === userId);
+  };
+
+  // Filter leaves by status
+  const pendingLeaves = leaveApplications.filter(leave => leave.status === "Pending");
+  const approvedLeaves = leaveApplications.filter(leave => leave.status === "Approved");
+  const rejectedLeaves = leaveApplications.filter(leave => leave.status === "Rejected");
 
   const handleViewLeave = (leave: any) => {
     setSelectedLeave(leave);
+    setRejectionReason(""); // Reset rejection reason
     setDialogOpen(true);
   };
 
   const handleApproveLeave = (id: number) => {
-    // Move leave from pending to approved
-    const leaveToApprove = leaves.pending.find(leave => leave.id === id);
+    const leaveToApprove = leaveApplications.find(leave => leave.id === id);
     
     if (leaveToApprove) {
-      const updatedLeave = {
-        ...leaveToApprove,
-        status: "Approved",
-        approvedOn: new Date().toISOString().split('T')[0]
-      };
-      
-      setLeaves({
-        pending: leaves.pending.filter(leave => leave.id !== id),
-        approved: [...leaves.approved, updatedLeave],
-        rejected: leaves.rejected
-      });
+      // Update the leave status in our mock database
+      updateLeaveStatus(id, "Approved", "", new Date().toISOString().split('T')[0]);
       
       toast({
         title: "Leave Approved",
-        description: `Leave request for ${leaveToApprove.employee} has been approved.`,
+        description: `Leave request for ${leaveToApprove.employeeName} has been approved.`,
       });
+      
+      setDialogOpen(false);
     }
-    
-    setDialogOpen(false);
   };
 
   const handleRejectLeave = (id: number, reason: string) => {
-    // Move leave from pending to rejected
-    const leaveToReject = leaves.pending.find(leave => leave.id === id);
+    const leaveToReject = leaveApplications.find(leave => leave.id === id);
     
     if (leaveToReject) {
-      const updatedLeave = {
-        ...leaveToReject,
-        status: "Rejected",
-        rejectedOn: new Date().toISOString().split('T')[0],
-        rejectionReason: reason
-      };
+      if (!reason.trim()) {
+        toast({
+          title: "Rejection Reason Required",
+          description: "Please provide a reason for rejecting this leave request.",
+          variant: "destructive",
+        });
+        return;
+      }
       
-      setLeaves({
-        pending: leaves.pending.filter(leave => leave.id !== id),
-        approved: leaves.approved,
-        rejected: [...leaves.rejected, updatedLeave]
-      });
+      // Update the leave status in our mock database
+      updateLeaveStatus(id, "Rejected", reason, undefined, new Date().toISOString().split('T')[0]);
       
       toast({
         title: "Leave Rejected",
-        description: `Leave request for ${leaveToReject.employee} has been rejected.`,
+        description: `Leave request for ${leaveToReject.employeeName} has been rejected.`,
       });
+      
+      setRejectionReason("");
+      setDialogOpen(false);
     }
-    
-    setRejectionReason("");
-    setDialogOpen(false);
   };
 
-  const activeLeaves = 
-    activeTab === "pending" ? leaves.pending :
-    activeTab === "approved" ? leaves.approved :
-    leaves.rejected;
+  let activeLeaves;
+  switch (activeTab) {
+    case "pending":
+      activeLeaves = pendingLeaves;
+      break;
+    case "approved":
+      activeLeaves = approvedLeaves;
+      break;
+    case "rejected":
+      activeLeaves = rejectedLeaves;
+      break;
+    default:
+      activeLeaves = pendingLeaves;
+  }
 
   return (
     <motion.div
@@ -203,7 +111,7 @@ const LeaveApproval = () => {
             <CardDescription>Awaiting approval</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-yellow-500">{leaves.pending.length}</div>
+            <div className="text-3xl font-bold text-yellow-500">{pendingLeaves.length}</div>
           </CardContent>
         </Card>
 
@@ -213,7 +121,7 @@ const LeaveApproval = () => {
             <CardDescription>This month</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-500">{leaves.approved.length}</div>
+            <div className="text-3xl font-bold text-green-500">{approvedLeaves.length}</div>
           </CardContent>
         </Card>
 
@@ -223,7 +131,7 @@ const LeaveApproval = () => {
             <CardDescription>This month</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-red-500">{leaves.rejected.length}</div>
+            <div className="text-3xl font-bold text-red-500">{rejectedLeaves.length}</div>
           </CardContent>
         </Card>
       </div>
@@ -237,78 +145,81 @@ const LeaveApproval = () => {
 
         <TabsContent value={activeTab} className="space-y-4">
           {activeLeaves.length > 0 ? (
-            activeLeaves.map((leave) => (
-              <Card key={leave.id} className="shadow-card hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center space-x-4">
-                      <Avatar>
-                        <AvatarImage src={leave.image} alt={leave.employee} />
-                        <AvatarFallback>{leave.employee.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <CardTitle>{leave.employee}</CardTitle>
-                        <CardDescription>{leave.position} • {leave.department}</CardDescription>
+            activeLeaves.map((leave) => {
+              const employeeProfile = getUserProfile(leave.employeeId);
+              return (
+                <Card key={leave.id} className="shadow-card hover:shadow-lg transition-shadow duration-300">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center space-x-4">
+                        <Avatar>
+                          <AvatarImage src={employeeProfile?.image} alt={leave.employeeName} />
+                          <AvatarFallback>{leave.employeeName.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle>{leave.employeeName}</CardTitle>
+                          <CardDescription>{employeeProfile?.position} • {employeeProfile?.department}</CardDescription>
+                        </div>
+                      </div>
+                      <Badge variant={
+                        leave.status === "Pending" ? "outline" : 
+                        leave.status === "Approved" ? "default" : 
+                        "destructive"
+                      }>
+                        {leave.status}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Leave Type:</span> {leave.type}
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Duration:</span> {leave.days} days
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">From:</span> {format(new Date(leave.startDate), "MMM dd, yyyy")}
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">To:</span> {format(new Date(leave.endDate), "MMM dd, yyyy")}
                       </div>
                     </div>
-                    <Badge variant={
-                      leave.status === "Pending" ? "outline" : 
-                      leave.status === "Approved" ? "default" : 
-                      "destructive"
-                    }>
-                      {leave.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Leave Type:</span> {leave.type}
+                    
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm text-muted-foreground">
+                        Applied on: {format(new Date(leave.appliedOn), "MMM dd, yyyy")}
+                      </div>
+                      <div className="space-x-2">
+                        <Button variant="outline" size="sm" onClick={() => handleViewLeave(leave)}>
+                          View Details
+                        </Button>
+                        {leave.status === "Pending" && (
+                          <>
+                            <Button 
+                              variant="default" 
+                              size="sm" 
+                              onClick={() => handleApproveLeave(leave.id)}
+                            >
+                              <CheckCircle className="mr-2 h-4 w-4" />
+                              Approve
+                            </Button>
+                            <Button 
+                              variant="destructive" 
+                              size="sm" 
+                              onClick={() => handleViewLeave(leave)}
+                            >
+                              <XCircle className="mr-2 h-4 w-4" />
+                              Reject
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Duration:</span> {leave.days} days
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">From:</span> {new Date(leave.startDate).toLocaleDateString()}
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">To:</span> {new Date(leave.endDate).toLocaleDateString()}
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <div className="text-sm text-muted-foreground">
-                      Applied on: {new Date(leave.appliedOn).toLocaleDateString()}
-                    </div>
-                    <div className="space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => handleViewLeave(leave)}>
-                        View Details
-                      </Button>
-                      {leave.status === "Pending" && (
-                        <>
-                          <Button 
-                            variant="default" 
-                            size="sm" 
-                            onClick={() => handleApproveLeave(leave.id)}
-                          >
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                            Approve
-                          </Button>
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
-                            onClick={() => handleViewLeave(leave)}
-                          >
-                            <XCircle className="mr-2 h-4 w-4" />
-                            Reject
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                  </CardContent>
+                </Card>
+              )
+            })
           ) : (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-8">
@@ -337,14 +248,21 @@ const LeaveApproval = () => {
           {selectedLeave && (
             <div className="py-4">
               <div className="flex items-center space-x-4 mb-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={selectedLeave.image} alt={selectedLeave.employee} />
-                  <AvatarFallback>{selectedLeave.employee.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-medium">{selectedLeave.employee}</h3>
-                  <p className="text-sm text-muted-foreground">{selectedLeave.position} • {selectedLeave.department}</p>
-                </div>
+                {(() => {
+                  const employeeProfile = getUserProfile(selectedLeave.employeeId);
+                  return (
+                    <>
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={employeeProfile?.image} alt={selectedLeave.employeeName} />
+                        <AvatarFallback>{selectedLeave.employeeName.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-medium">{selectedLeave.employeeName}</h3>
+                        <p className="text-sm text-muted-foreground">{employeeProfile?.position} • {employeeProfile?.department}</p>
+                      </div>
+                    </>
+                  )
+                })()}
                 <Badge className="ml-auto" variant={
                   selectedLeave.status === "Pending" ? "outline" : 
                   selectedLeave.status === "Approved" ? "default" : 
@@ -363,22 +281,27 @@ const LeaveApproval = () => {
                     <span className="text-muted-foreground font-medium">Duration:</span> {selectedLeave.days} days
                   </div>
                   <div className="text-sm">
-                    <span className="text-muted-foreground font-medium">From:</span> {new Date(selectedLeave.startDate).toLocaleDateString()}
+                    <span className="text-muted-foreground font-medium">From:</span> {format(new Date(selectedLeave.startDate), "MMM dd, yyyy")}
                   </div>
                   <div className="text-sm">
-                    <span className="text-muted-foreground font-medium">To:</span> {new Date(selectedLeave.endDate).toLocaleDateString()}
+                    <span className="text-muted-foreground font-medium">To:</span> {format(new Date(selectedLeave.endDate), "MMM dd, yyyy")}
                   </div>
                   <div className="text-sm">
-                    <span className="text-muted-foreground font-medium">Applied On:</span> {new Date(selectedLeave.appliedOn).toLocaleDateString()}
+                    <span className="text-muted-foreground font-medium">Applied On:</span> {format(new Date(selectedLeave.appliedOn), "MMM dd, yyyy")}
                   </div>
-                  {selectedLeave.status === "Approved" && (
+                  {selectedLeave.status === "Approved" && selectedLeave.approvedOn && (
                     <div className="text-sm">
-                      <span className="text-muted-foreground font-medium">Approved On:</span> {new Date(selectedLeave.approvedOn).toLocaleDateString()}
+                      <span className="text-muted-foreground font-medium">Approved On:</span> {format(new Date(selectedLeave.approvedOn), "MMM dd, yyyy")}
                     </div>
                   )}
-                  {selectedLeave.status === "Rejected" && (
+                  {selectedLeave.status === "Rejected" && selectedLeave.rejectedOn && (
                     <div className="text-sm">
-                      <span className="text-muted-foreground font-medium">Rejected On:</span> {new Date(selectedLeave.rejectedOn).toLocaleDateString()}
+                      <span className="text-muted-foreground font-medium">Rejected On:</span> {format(new Date(selectedLeave.rejectedOn), "MMM dd, yyyy")}
+                    </div>
+                  )}
+                  {selectedLeave.contactInfo && (
+                    <div className="text-sm">
+                      <span className="text-muted-foreground font-medium">Contact:</span> {selectedLeave.contactInfo}
                     </div>
                   )}
                 </div>
@@ -401,7 +324,7 @@ const LeaveApproval = () => {
 
                 {selectedLeave.status === "Pending" && (
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium">Rejection Reason (Optional)</h4>
+                    <h4 className="text-sm font-medium">Rejection Reason (Required if rejecting)</h4>
                     <textarea
                       className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm"
                       placeholder="Provide a reason if you're rejecting this leave request..."

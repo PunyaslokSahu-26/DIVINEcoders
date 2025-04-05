@@ -1,51 +1,42 @@
 import { useState, useEffect } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  User,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { users } from '@/data/mockDatabase';
+
+interface AuthUser {
+  id: string;
+  name: string;
+  role: 'employee' | 'hr';
+  position: string;
+  department: string;
+  image: string;
+}
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return unsubscribe;
+    // Check if user is already logged in (from localStorage)
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signIn = async (id: string, password: string) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
-    } catch (error) {
-      throw error;
-    }
-  };
+      const foundUser = users.find(
+        (user) => user.id === id && user.password === password
+      );
 
-  const signIn = async (email: string, password: string) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
-    } catch (error) {
-      throw error;
-    }
-  };
+      if (!foundUser) {
+        throw new Error('Invalid credentials');
+      }
 
-  const signInWithGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const userCredential = await signInWithPopup(auth, provider);
-      return userCredential.user;
+      const { password: _, ...userWithoutPassword } = foundUser;
+      setUser(userWithoutPassword);
+      localStorage.setItem('user', JSON.stringify(userWithoutPassword));
+      return userWithoutPassword;
     } catch (error) {
       throw error;
     }
@@ -53,7 +44,8 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      setUser(null);
+      localStorage.removeItem('user');
     } catch (error) {
       throw error;
     }
@@ -62,9 +54,7 @@ export function useAuth() {
   return {
     user,
     loading,
-    signUp,
     signIn,
-    signInWithGoogle,
     logout,
   };
 } 

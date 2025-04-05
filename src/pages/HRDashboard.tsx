@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,9 +23,11 @@ import PerformanceReviews from "@/components/hr/PerformanceReviews";
 import FeedbackHub from "@/components/hr/FeedbackHub";
 import LeaveApproval from "@/components/hr/LeaveApproval";
 import SalaryPayroll from "@/components/hr/SalaryPayroll";
+import { useAuth } from '@/hooks/useAuth';
 
 const HRDashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState("employee-management");
 
   const renderContent = () => {
@@ -46,21 +47,27 @@ const HRDashboard = () => {
     }
   };
 
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-gray-50 flex w-full">
-        <Sidebar>
+      <div className="min-h-screen bg-gray-50 flex w-full flex-col md:flex-row">
+        <Sidebar className="md:w-64 w-full">
           <SidebarHeader className="flex flex-col items-center pt-6">
             <div className="flex-shrink-0 flex items-center mb-6">
               <span className="text-xl font-bold text-groww-primary">Atom HR</span>
             </div>
             <Avatar className="h-12 w-12">
-              <AvatarImage src="https://i.pravatar.cc/150?img=32" alt="Avatar" />
-              <AvatarFallback>HR</AvatarFallback>
+              <AvatarImage src={user.image} alt={user.name} />
+              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <p className="mt-2 font-medium">HR Admin</p>
-            <p className="text-xs text-muted-foreground">administrator@atomhr.com</p>
+            <p className="mt-2 font-medium">{user.name}</p>
+            <p className="text-xs text-muted-foreground">{user.position}</p>
           </SidebarHeader>
+          
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -110,18 +117,18 @@ const HRDashboard = () => {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
-          <SidebarFooter className="flex justify-center pb-6">
+          <SidebarFooter>
             <Button 
               variant="outline" 
               onClick={() => navigate("/")}
               className="w-full"
             >
-              Switch Role
+              Logout
             </Button>
           </SidebarFooter>
         </Sidebar>
 
-        <div className="flex-1">
+        <div className="flex-1 w-full">
           <div className="flex flex-col">
             {/* Header */}
             <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
@@ -134,9 +141,12 @@ const HRDashboard = () => {
                   <div className="flex items-center">
                     <Notifications />
                     <div className="ml-3 relative">
-                      <Avatar className="h-8 w-8 cursor-pointer">
-                        <AvatarImage src="https://i.pravatar.cc/150?img=32" alt="Avatar" />
-                        <AvatarFallback>HR</AvatarFallback>
+                      <Avatar 
+                        className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                        onClick={() => setActiveSection("employee-management")}
+                      >
+                        <AvatarImage src={user.image} alt={user.name} />
+                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                     </div>
                   </div>
@@ -145,19 +155,20 @@ const HRDashboard = () => {
             </header>
 
             {/* Main Content */}
-            <main className="flex-grow p-6 max-w-7xl mx-auto">
+            <main className="flex-grow p-4 md:p-6 max-w-7xl mx-auto bg-gray-50 w-full overflow-x-hidden">
               <motion.div
                 key={activeSection}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
+                className="w-full"
               >
                 {renderContent()}
               </motion.div>
             </main>
 
             {/* Footer */}
-            <footer className="bg-white border-t border-gray-200">
+            <footer className="mt-auto">
               <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                 <p className="text-center text-gray-500 text-sm">
                   © 2023 GoFloww's Atom HR Platform. All rights reserved.
