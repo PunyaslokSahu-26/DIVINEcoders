@@ -15,6 +15,14 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { users, feedbacks, addFeedback, Feedback } from "@/data/mockDatabase";
 
+// Function to emit feedback update event
+const notifyFeedbackUpdate = (feedback: any) => {
+  const event = new CustomEvent('feedbackUpdate', { 
+    detail: { feedback } 
+  });
+  window.dispatchEvent(event);
+};
+
 const EmployeeFeedback = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("give-feedback");
@@ -90,7 +98,10 @@ const EmployeeFeedback = () => {
     };
 
     // Add the new feedback to our database
-    addFeedback(newFeedback);
+    const addedFeedback = addFeedback(newFeedback);
+    
+    // Emit event to update charts
+    notifyFeedbackUpdate(addedFeedback);
     
     toast({
       title: "Feedback Submitted",
