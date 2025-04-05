@@ -258,28 +258,28 @@ const ChatBot: React.FC = () => {
         {!isOpen ? (
           <button 
             onClick={() => setIsOpen(true)}
-            className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors"
+            className="bg-blue-600 dark:bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
             <span className="material-symbols-outlined text-2xl">smart_toy</span>
           </button>
         ) : (
-          <div className="w-full max-w-sm sm:max-w-md bg-white rounded-2xl shadow-xl flex flex-col h-96 md:h-[32rem] transition-all duration-300">
+          <div className="w-full max-w-sm sm:max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl flex flex-col h-96 md:h-[32rem] transition-all duration-300 border border-gray-200 dark:border-gray-700">
             {/* Chatbot Header */}
-            <div className="flex items-center justify-between rounded-t-2xl px-4 py-3 bg-blue-600 text-white">
+            <div className="flex items-center justify-between rounded-t-2xl px-4 py-3 bg-blue-600 dark:bg-blue-500 text-white">
               <div className="flex items-center space-x-2">
                 <ChatbotIcon />
                 <h2 className="text-lg font-semibold">HR Assistant</h2>
               </div>
               <div className="flex items-center space-x-2">
                 <button 
-                  className="p-1 rounded-full hover:bg-blue-700 transition-colors"
+                  className="p-1 rounded-full hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200"
                   onClick={handleReset}
                   title="Restart conversation"
                 >
                   <span className="material-symbols-outlined">refresh</span>
                 </button>
                 <button 
-                  className="p-1 rounded-full hover:bg-blue-700 transition-colors"
+                  className="p-1 rounded-full hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                   title="Minimize"
                 >
@@ -289,7 +289,7 @@ const ChatBot: React.FC = () => {
             </div>
 
             {/* ChatBot Body */}
-            <div className="flex-1 p-4 overflow-y-auto">
+            <div className="flex-1 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900">
               {messages.map((message, index) => (
                 <div 
                   key={index} 
@@ -299,8 +299,8 @@ const ChatBot: React.FC = () => {
                   <p 
                     className={`px-4 py-2 rounded-lg max-w-xs ${
                       message.role === 'bot' 
-                        ? 'bg-gray-100 text-gray-800 ml-2' 
-                        : 'bg-blue-600 text-white'
+                        ? 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 ml-2 shadow-sm border border-gray-200 dark:border-gray-700' 
+                        : 'bg-blue-600 dark:bg-blue-500 text-white'
                     }`}
                   >
                     {message.isTyping ? 
@@ -318,15 +318,19 @@ const ChatBot: React.FC = () => {
             </div>
             
             {/* ChatBot Footer */}
-            <div className="border-t border-gray-200 p-3 rounded-b-2xl">
+            <div className="border-t border-gray-200 dark:border-gray-700 p-3 rounded-b-2xl bg-white dark:bg-gray-800">
               <form onSubmit={handleSubmit} className="flex items-center">
                 <button 
                   type="button"
                   onClick={toggleListening}
-                  className={`${isListening ? 'bg-red-500' : 'bg-gray-200 hover:bg-gray-300'} p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2`}
+                  className={`${
+                    isListening 
+                      ? 'bg-red-500 dark:bg-red-600' 
+                      : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  } p-2 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2`}
                   title="Voice input"
                 >
-                  <span className="material-symbols-outlined">
+                  <span className="material-symbols-outlined text-gray-800 dark:text-gray-200">
                     {isListening ? 'mic' : 'mic_none'}
                   </span>
                 </button>
@@ -335,15 +339,21 @@ const ChatBot: React.FC = () => {
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   placeholder="Ask an HR question..." 
-                  className="w-full border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400" 
                   disabled={isLoading}
                 />
                 <button 
                   type="submit"
-                  className={`${isLoading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white p-2 rounded-full ml-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`${
+                    isLoading 
+                      ? 'bg-gray-400 dark:bg-gray-600' 
+                      : 'bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600'
+                  } text-white p-2 rounded-full ml-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   disabled={isLoading}
                 >
-                  <span className="material-symbols-outlined">{isLoading ? 'hourglass_top' : 'send'}</span>
+                  <span className="material-symbols-outlined">
+                    {isLoading ? 'hourglass_top' : 'send'}
+                  </span>
                 </button>
               </form>
             </div>
