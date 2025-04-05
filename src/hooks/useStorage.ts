@@ -8,18 +8,15 @@ import {
 } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
 
-export function useStorage() {
-  const uploadFile = async (
-    path: string,
-    file: File,
-    onProgress?: (progress: number) => void
-  ) => {
+export const useStorage = () => {
+  const uploadFile = async (path: string, file: File) => {
     try {
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(snapshot.ref);
       return downloadURL;
     } catch (error) {
+      console.error('Error uploading file:', error);
       throw error;
     }
   };
@@ -27,9 +24,10 @@ export function useStorage() {
   const getFileURL = async (path: string) => {
     try {
       const storageRef = ref(storage, path);
-      const url = await getDownloadURL(storageRef);
-      return url;
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
     } catch (error) {
+      console.error('Error getting file URL:', error);
       throw error;
     }
   };
@@ -38,7 +36,9 @@ export function useStorage() {
     try {
       const storageRef = ref(storage, path);
       await deleteObject(storageRef);
+      return path;
     } catch (error) {
+      console.error('Error deleting file:', error);
       throw error;
     }
   };
@@ -47,8 +47,9 @@ export function useStorage() {
     try {
       const storageRef = ref(storage, path);
       const result = await listAll(storageRef);
-      return result.items.map((item) => item.fullPath);
+      return result.items.map(item => item.fullPath);
     } catch (error) {
+      console.error('Error listing files:', error);
       throw error;
     }
   };
@@ -59,4 +60,4 @@ export function useStorage() {
     deleteFile,
     listFiles,
   };
-} 
+}; 
