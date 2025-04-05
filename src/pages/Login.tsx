@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { motion } from "framer-motion";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -65,12 +63,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
+      <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-groww-primary">Atom HR</h1>
           <p className="text-gray-600 mt-2">Performance & Feedback Management Platform</p>
@@ -96,7 +89,7 @@ const Login = () => {
                     <Label htmlFor="email">Email</Label>
                     <Input 
                       id="email" 
-                      type="email" 
+                      type="email"
                       placeholder="youremail@company.com" 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -107,7 +100,7 @@ const Login = () => {
                     <Label htmlFor="password">Password</Label>
                     <Input 
                       id="password" 
-                      type="password" 
+                      type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -164,7 +157,7 @@ const Login = () => {
                     <Label htmlFor="email-signup">Email</Label>
                     <Input 
                       id="email-signup" 
-                      type="email" 
+                      type="email"
                       placeholder="youremail@company.com" 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -175,7 +168,7 @@ const Login = () => {
                     <Label htmlFor="password-signup">Password</Label>
                     <Input 
                       id="password-signup" 
-                      type="password" 
+                      type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -223,9 +216,10 @@ const Login = () => {
             </p>
           </CardFooter>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 };
 
 export default Login;
+
