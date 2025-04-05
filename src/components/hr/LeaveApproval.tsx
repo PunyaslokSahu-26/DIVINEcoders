@@ -14,7 +14,7 @@ import { motion } from "framer-motion";
 const pendingLeaves = [
   { 
     id: 1, 
-    employee: "John Smith", 
+    employee: "Rahul Sharma", 
     position: "Frontend Developer",
     department: "Engineering",
     type: "Annual Leave", 
@@ -42,7 +42,7 @@ const pendingLeaves = [
   },
   { 
     id: 3, 
-    employee: "Sarah Williams", 
+    employee: "Priya Singh", 
     position: "UX Designer",
     department: "Design",
     type: "Work From Home", 
@@ -59,7 +59,7 @@ const pendingLeaves = [
 const approvedLeaves = [
   { 
     id: 101, 
-    employee: "Michael Chen", 
+    employee: "Sneha Patel", 
     position: "Product Manager",
     department: "Product",
     type: "Annual Leave", 
@@ -74,7 +74,7 @@ const approvedLeaves = [
   },
   { 
     id: 102, 
-    employee: "David Rodriguez", 
+    employee: "Naveen Joshi", 
     position: "Backend Developer",
     department: "Engineering",
     type: "Sick Leave", 
@@ -92,7 +92,7 @@ const approvedLeaves = [
 const rejectedLeaves = [
   { 
     id: 201, 
-    employee: "Lisa Kim", 
+    employee: "Santoshi Gupta", 
     position: "Content Writer",
     department: "Marketing",
     type: "Annual Leave", 

@@ -15,15 +15,15 @@ import { motion } from "framer-motion";
 
 // Mock data
 const ongoingReviews = [
-  { id: 1, employee: "John Smith", position: "Frontend Developer", department: "Engineering", deadline: "2023-12-15", progress: 75, started: "2023-11-01", image: "https://i.pravatar.cc/150?img=1" },
+  { id: 1, employee: "Rahul Sharma", position: "Frontend Developer", department: "Engineering", deadline: "2023-12-15", progress: 75, started: "2023-11-01", image: "https://i.pravatar.cc/150?img=1" },
   { id: 2, employee: "Emily Johnson", position: "Marketing Specialist", department: "Marketing", deadline: "2023-12-20", progress: 50, started: "2023-11-05", image: "https://i.pravatar.cc/150?img=5" },
-  { id: 3, employee: "Michael Chen", position: "Product Manager", department: "Product", deadline: "2023-12-18", progress: 25, started: "2023-11-10", image: "https://i.pravatar.cc/150?img=9" },
+  { id: 3, employee: "Sneha Patel", position: "Product Manager", department: "Product", deadline: "2023-12-18", progress: 25, started: "2023-11-10", image: "https://i.pravatar.cc/150?img=9" },
 ];
 
 const pastReviews = [
-  { id: 101, employee: "Sarah Williams", position: "UX Designer", department: "Design", completedDate: "2023-06-15", rating: 4.5, reviewPeriod: "Q2 2023", image: "https://i.pravatar.cc/150?img=10" },
-  { id: 102, employee: "David Rodriguez", position: "Backend Developer", department: "Engineering", completedDate: "2023-09-30", rating: 4.2, reviewPeriod: "Q3 2023", image: "https://i.pravatar.cc/150?img=12" },
-  { id: 103, employee: "Lisa Kim", position: "Content Writer", department: "Marketing", completedDate: "2023-03-20", rating: 3.8, reviewPeriod: "Q1 2023", image: "https://i.pravatar.cc/150?img=20" },
+  { id: 101, employee: "Sneha Patel", position: "UX Designer", department: "Design", completedDate: "2023-06-15", rating: 4.5, reviewPeriod: "Q2 2023", image: "https://i.pravatar.cc/150?img=10" },
+  { id: 102, employee: "Naveen Joshi", position: "Backend Developer", department: "Engineering", completedDate: "2023-09-30", rating: 4.2, reviewPeriod: "Q3 2023", image: "https://i.pravatar.cc/150?img=12" },
+  { id: 103, employee: "Santoshi Gupta", position: "Content Writer", department: "Marketing", completedDate: "2023-03-20", rating: 3.8, reviewPeriod: "Q1 2023", image: "https://i.pravatar.cc/150?img=20" },
 ];
 
 const PerformanceReviews = () => {
