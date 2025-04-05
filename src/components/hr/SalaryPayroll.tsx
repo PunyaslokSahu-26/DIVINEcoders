@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 const salaryData = [
   { 
     id: 1, 
-    employee: "John Smith", 
+    employee: "Rahul Gupta", 
     position: "Frontend Developer",
     department: "Engineering",
     baseSalary: 85000,
@@ -42,7 +42,7 @@ const salaryData = [
   },
   { 
     id: 3, 
-    employee: "Michael Chen", 
+    employee: "Sneha Patel", 
     position: "Product Manager",
     department: "Product",
     baseSalary: 95000,
@@ -55,7 +55,7 @@ const salaryData = [
   },
   { 
     id: 4, 
-    employee: "Sarah Williams", 
+    employee: "Priya Singh", 
     position: "UX Designer",
     department: "Design",
     baseSalary: 80000,
@@ -68,7 +68,7 @@ const salaryData = [
   },
   { 
     id: 5, 
-    employee: "David Rodriguez", 
+    employee: "Naveen Joshi", 
     position: "Backend Developer",
     department: "Engineering",
     baseSalary: 90000,
