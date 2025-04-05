@@ -117,7 +117,7 @@ const EmployeeFeedback = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="give-feedback">Give Feedback</TabsTrigger>
+          <TabsTrigger value="give-feedback">Give Your Feedback</TabsTrigger>
           <TabsTrigger value="my-feedback">My Previous Feedback</TabsTrigger>
         </TabsList>
 
@@ -125,7 +125,7 @@ const EmployeeFeedback = () => {
           <Card>
             <CardHeader>
               <CardTitle>Colleagues</CardTitle>
-              <CardDescription>Select a colleague to provide feedback</CardDescription>
+              <CardDescription>Select from colleagues to give feedback</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6">
               {colleagues.map((colleague) => (
@@ -142,7 +142,7 @@ const EmployeeFeedback = () => {
                   </div>
                   <Button variant="outline" size="sm" onClick={() => handleGiveFeedback(colleague)}>
                     <MessageSquare className="mr-2 h-4 w-4" />
-                    Give Feedback
+                    Give Your Feedback
                   </Button>
                 </div>
               ))}

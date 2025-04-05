@@ -53,7 +53,7 @@ export default function Index() {
               </div>
               <CardTitle className="text-2xl">HR Dashboard</CardTitle>
               <CardDescription>
-                Manage employee performance, feedback, and development
+                Manage employee performance and feedback
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
@@ -85,7 +85,7 @@ export default function Index() {
               </div>
               <CardTitle className="text-2xl">Employee Dashboard</CardTitle>
               <CardDescription>
-                Track your performance, feedback, and career development
+                Track your performance and feedback
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
@@ -107,7 +107,7 @@ export default function Index() {
         transition={{ duration: 0.5, delay: 0.5 }}
         className="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm"
       >
-        © 2023 GoFloww's Atom HR Platform. All rights reserved.
+        © 2025 GoFloww's Atom HR Platform. All rights reserved.
       </motion.div>
     </div>
   );

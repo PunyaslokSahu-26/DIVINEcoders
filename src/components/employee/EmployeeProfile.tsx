@@ -19,10 +19,10 @@ const employeeData = {
   position: "Frontend Developer",
   department: "Engineering",
   email: "john.smith@company.com",
-  phone: "+1 (555) 123-4567",
-  location: "New York, NY",
+  phone: "+91 55512-40567",
+  location: "India",
   joiningDate: "2020-05-15",
-  manager: "David Rodriguez",
+  manager: "Dan Roin",
   employeeId: "EMP-2020-001",
   about: "Experienced frontend developer with expertise in React, TypeScript, and modern web technologies. Passionate about creating intuitive user interfaces and optimizing web performance.",
   skills: ["React", "TypeScript", "JavaScript", "HTML/CSS", "Redux", "Tailwind CSS"],
@@ -97,7 +97,7 @@ const EmployeeProfile = () => {
         ) : (
           <div className="space-x-2">
             <Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
-            <Button onClick={handleSaveProfile}>Save Changes</Button>
+            <Button onClick={handleSaveProfile}>Save All Changes</Button>
           </div>
         )}
       </div>
@@ -328,7 +328,7 @@ const EmployeeProfile = () => {
               <Upload className="h-10 w-10 text-muted-foreground mb-2" />
               <p className="text-sm font-medium mb-1">Drag and drop or click to upload</p>
               <p className="text-xs text-muted-foreground mb-4">PNG, JPG or GIF up to 2MB</p>
-              <Button variant="outline">Browse Files</Button>
+              <Button variant="outline">Browse File</Button>
             </div>
           </div>
           
