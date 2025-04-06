@@ -2,7 +2,7 @@
 <br>
 Welcome to the **Divin eCoders** Employee Management System — a simple, web-based portal for employees and HR to manage daily operations.
 <br>
-<h3>🌐 **Live Website**: [https://divin-ecoders.vercel.app](https://divin-ecoders.vercel.app)</h3>
+<h3>🌐 **Live Website**: divin-ecoders.vercel.app</h3>
 <br>
 <br>
 
