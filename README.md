@@ -1,9 +1,7 @@
 <h2># Divine Coders Employee Management System</h2>
 <br>
 Welcome to the **Divin eCoders** Employee Management System — a simple, web-based portal for employees and HR to manage daily operations.
-<br>
-<h3>🌐 **Live Website**:<a href=" divin-ecoders.vercel.app"> divin-ecoders.vercel.app</a></h3>
-<br>
+
 <br>
 
 👥 Login Credentials
