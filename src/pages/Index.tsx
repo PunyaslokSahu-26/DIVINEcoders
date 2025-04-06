@@ -1,114 +1,168 @@
-import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Building2, ChevronRight, User } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+import { motion, AnimatePresence } from "framer-motion";
+import { Users, Building2, Shield, Clock } from "lucide-react";
+import { useState } from "react";
+
+const colorAnimation = {
+  backgroundPosition: ["100% 50%", "-45% 50%"],
+  transition: {
+    duration: 4,
+    repeat: Infinity,
+    ease: "linear"
+  }
+};
+
+const zoomAnimation = {
+  scale: [1, 1.1, 1],
+  transition: {
+    duration: 4,
+    repeat: Infinity,
+    ease: "easeInOut"
+  }
+};
 
 export default function Index() {
   const navigate = useNavigate();
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const handleLogin = () => {
+    setIsNavigating(true);
+    setTimeout(() => {
+      navigate("/login");
+    }, 800); // Reduced to match the exit animation duration
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 p-4">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-      
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-12"
-      >
-        <h1 className="text-4xl font-bold text-groww-primary mb-2 dark:text-white">
-          Atom HR Platform
-        </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300">
-          Performance & Feedback Management
-        </p>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8"
-      >
+    <AnimatePresence>
+      {!isNavigating && (
         <motion.div
-          whileHover={{ 
-            scale: 1.03,
-            transition: { duration: 0.2 }
+          className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-white p-4"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ 
+            opacity: 0, 
+            scale: 0.8,
+            transition: {
+              duration: 0.4,
+              ease: "easeInOut"
+            }
           }}
-          onHoverStart={() => setHoveredCard("hr")}
-          onHoverEnd={() => setHoveredCard(null)}
-          className="cursor-pointer"
-          onClick={() => navigate("/login")}
         >
-          <Card className={`shadow-lg border-2 transition-all duration-300 h-full ${hoveredCard === "hr" ? "border-groww-primary" : "border-transparent"}`}>
-            <CardHeader className="text-center pb-2">
-              <div className="mx-auto bg-groww-light p-4 rounded-full mb-4">
-                <Building2 className="h-12 w-12 text-groww-primary" />
-              </div>
-              <CardTitle className="text-2xl">HR Dashboard</CardTitle>
-              <CardDescription>
-                Manage employee performance and feedback
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-gray-600 mb-8">
-                Access tools for managing reviews, feedback cycles, and analytics to support your team's growth and development.
-              </p>
-              <Button className="group">
-                HR Login
-                <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
+          {/* Animated background elements */}
+          <motion.div
+            className="absolute top-20 left-10 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30"
+            animate={{
+              x: [0, 30, 0],
+              y: [0, -30, 0],
+            }}
+            transition={{
+              duration: 0.4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-10 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-30"
+            animate={{
+              x: [0, -30, 0],
+              y: [0, 30, 0],
+            }}
+            transition={{
+              duration: 0.4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
 
-        <motion.div
-          whileHover={{ 
-            scale: 1.03,
-            transition: { duration: 0.2 }
-          }}
-          onHoverStart={() => setHoveredCard("employee")}
-          onHoverEnd={() => setHoveredCard(null)}
-          className="cursor-pointer"
-          onClick={() => navigate("/login")}
-        >
-          <Card className={`shadow-lg border-2 transition-all duration-300 h-full ${hoveredCard === "employee" ? "border-groww-primary" : "border-transparent"}`}>
-            <CardHeader className="text-center pb-2">
-              <div className="mx-auto bg-groww-light p-4 rounded-full mb-4">
-                <User className="h-12 w-12 text-groww-primary" />
-              </div>
-              <CardTitle className="text-2xl">Employee Dashboard</CardTitle>
-              <CardDescription>
-                Track your performance and feedback
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-gray-600 mb-8">
-                View your performance metrics, request and provide feedback, and access resources to support your professional growth.
+          <div className="max-w-4xl mx-auto space-y-12 relative z-10">
+            <motion.div 
+              className="text-center space-y-4"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.h1 
+                className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-gray-200 to-blue-600 bg-clip-text text-transparent bg-[length:300%_100%]"
+                animate={colorAnimation}
+              >
+                Welcome to Atom HR
+              </motion.h1>
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+                Streamline your HR processes with our comprehensive management solution. 
+                From employee management to performance tracking, we've got you covered.
               </p>
-              <Button className="group">
-                Employee Login
-                <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
+            </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-        className="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm"
-      >
-        © 2025 GoFloww's Atom HR Platform. All rights reserved.
-      </motion.div>
-    </div>
+            <motion.div 
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <motion.div 
+                className="p-6 rounded-lg bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300"
+                animate={zoomAnimation}
+                style={{ transformOrigin: "center center" }}
+              >
+                <div className="relative">
+                  <Users className="w-12 h-12 text-blue-600 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Employee Management</h3>
+                  <p className="text-sm text-muted-foreground">Efficiently manage your workforce with our intuitive tools</p>
+                </div>
+              </motion.div>
+              <motion.div 
+                className="p-6 rounded-lg bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300"
+                animate={zoomAnimation}
+                style={{ transformOrigin: "center center" }}
+              >
+                <div className="relative">
+                  <Building2 className="w-12 h-12 text-blue-600 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Organization Structure</h3>
+                  <p className="text-sm text-muted-foreground">Maintain clear hierarchies and department structures</p>
+                </div>
+              </motion.div>
+              <motion.div 
+                className="p-6 rounded-lg bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300"
+                animate={zoomAnimation}
+                style={{ transformOrigin: "center center" }}
+              >
+                <div className="relative">
+                  <Shield className="w-12 h-12 text-blue-600 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Secure Platform</h3>
+                  <p className="text-sm text-muted-foreground">Your data is protected with enterprise-grade security</p>
+                </div>
+              </motion.div>
+              <motion.div 
+                className="p-6 rounded-lg bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300"
+                animate={zoomAnimation}
+                style={{ transformOrigin: "center center" }}
+              >
+                <div className="relative">
+                  <Clock className="w-12 h-12 text-blue-600 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Time Management</h3>
+                  <p className="text-sm text-muted-foreground">Track attendance and manage leave efficiently</p>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex justify-center"
+            >
+              <Button 
+                size="lg"
+                className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200"
+                onClick={handleLogin}
+              >
+                Login to Dashboard
+              </Button>
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
